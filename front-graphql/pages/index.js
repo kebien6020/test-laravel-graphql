@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { request } from 'graphql-request'
 
 const loginQuery = `
-    mutation ($email: String!, $password: String!) {
+    mutation login($email: String!, $password: String!) {
         login(email: $email, password: $password) {
             success
             error {
@@ -14,9 +14,21 @@ const loginQuery = `
 `
 
 const meQuery = `
-    {
+    query me {
         me {
             name
+        }
+    }
+`
+
+const logoutQuery = `
+    mutation logout {
+        logout {
+            success
+            error {
+                message
+                code
+            }
         }
     }
 `
@@ -27,12 +39,11 @@ const LoginForm = ({onLogin}) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        const { success = false } = await request('/graphql', loginQuery, {
+        const { login } = await request('/graphql', loginQuery, {
             email,
             password,
         })
-
-        if (data.success === true) onLogin()
+        if (login?.success === true) onLogin()
     }
 
     return (
@@ -83,9 +94,18 @@ const Home = () => {
         })()
     }, [loggedIn])
 
+    const handleLogout = async () => {
+        const { logout } = await request('/graphql', logoutQuery)
+        if (logout?.success) {
+            setUser(null)
+            setLoggedIn(false)
+        }
+    }
+
     return (loggedIn ? <>
         {user ? <>
             <h2>Hola {user.name}</h2>
+            <button onClick={handleLogout}>Cerrar sesion</button>
         </> : <>
             Cargando…
         </>
