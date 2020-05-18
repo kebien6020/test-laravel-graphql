@@ -13,6 +13,26 @@ type Query {
     me: User @auth
 }
 
+type Mutation {
+    login(email: String!, password: String!): BooleanResponse
+    register(
+        name: String!,
+        email: String! @rules(apply: ["email", "unique:users"]),
+        password: String! @hash,
+    ): BooleanResponse
+}
+
+type BooleanResponse {
+    success: Boolean!
+    error: Error
+}
+
+type Error {
+    message: String!
+    code: String!
+    exception: String
+}
+
 type User {
     id: ID!
     name: String!

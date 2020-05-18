@@ -29,6 +29,7 @@ return [
          * make sure to return spec-compliant responses in case an error is thrown.
          */
         'middleware' => [
+            \Illuminate\Session\Middleware\StartSession::class,
             \Nuwave\Lighthouse\Support\Http\Middleware\AcceptJson::class,
 
             // Logs in a user if they are authenticated. In contrast to Laravel's 'auth'
